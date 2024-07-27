@@ -1,32 +1,30 @@
-import {useState} from 'react';
-import { useAppDispatch } from './hook';
-
-import { addTodo } from './store/todoSlice';
-import NewTodoForm from './components/NewTodoForm';
-import TodoList from './components/TodoList';
-
-import './App.css';
-
+import React, { useEffect, useRef } from "react";
+import "./App.css";
+import AddTodo from "./components/AddTodo";
+import ListTodos from "./components/ListTodos";
+import { useAppSelector } from "./hook";
+import EditTodoForm from "./components/EditTodoForm";
 
 function App() {
-  const [text, setText] = useState('');
-  const dispatch = useAppDispatch();
+  const isEdit = useAppSelector(state => state.tasks.toggleEdit);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAction = () => {
-    if(text.trim().length) {
-      dispatch(addTodo(text));
-      setText('');
-    }
-  }
+  useEffect(() => {
+    if(inputRef.current) inputRef.current.focus();
+  }, [])
 
   return (
-    <div className='App'>
-      <NewTodoForm
-        value={text}
-        updateText={setText}
-        handleAction={handleAction}
-      />
-      <TodoList />
+    <div className="App">
+      <div className="App-header">
+       {isEdit 
+        ? <EditTodoForm/>
+        : <>
+            <AddTodo inputRef={inputRef}/>
+            <ListTodos/>
+          </>
+       } 
+       
+      </div>
     </div>
   );
 }
