@@ -1,41 +1,35 @@
-import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../hook";
-import { Todo, editTask, toggleEditTodo } from "../redux/todoSlice";
+import React, { useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../hooks'
+import { Todo, editTitleTodo, reducerIsEdit } from '../redux/todoSlice';
 
 const EditTodoForm = () => {
-  const todos = useAppSelector((state) => state.tasks.list);
-  const idEditTodo = useAppSelector((state) => state.tasks.idEditTodo);
-  const isEdit = useAppSelector((state) => state.tasks.toggleEdit);
-  const dispatch = useAppDispatch();
+  const idEditTodo= useAppSelector(state => state.todos.idEditTodo); 
+  const todos = useAppSelector(state => state.todos.list); 
+  const oldEditTodo = todos.find(todo => todo.id === idEditTodo)
+  const [text, setText] = useState<string>(oldEditTodo ? oldEditTodo.title : '')
+   const dispatch = useAppDispatch();
 
-  const editTodo = todos?.find((todo) => todo.id === idEditTodo);
+    const newEditTodo: Todo = {
+      id: oldEditTodo ? oldEditTodo.id : '',
+      title: text,
+      completed: oldEditTodo ? oldEditTodo.completed : false,
+    } 
 
-  const [text, setText] = useState<string>(editTodo ? editTodo.title : "");
-
-  const newTodo: Todo = {
-    id: idEditTodo,
-    title: text,
-    completed: false,
-
-  }
-
-  const handleSave = () => {
-    dispatch(editTask(newTodo))
-    dispatch(toggleEditTodo(isEdit))
-  }
-
+   const handleSave = () => {
+    dispatch(editTitleTodo(newEditTodo))
+    dispatch(reducerIsEdit(false));
+   }
+   console.log(text)
   return (
     <div>
-      <h2>Edit your todo</h2>
-      <input type="text" onChange={e=>setText(e.target.value)} value={text} />
-      <button
-        style={{ color: "green", cursor: "pointer" }}
-        onClick={handleSave}
-      >
-        save
-      </button>
+      <input 
+        type='text'
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        />
+      <button onClick={handleSave}>save</button>
     </div>
-  );
-};
+  )
+}
 
-export default EditTodoForm;
+export default EditTodoForm
