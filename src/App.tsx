@@ -1,33 +1,29 @@
-
-import { useEffect } from 'react';
-import './App.css';
-import NewTodoForm from './components/NewTodoForm';
-import TodoList from './components/TodoList';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { fetchTodos } from './redux/todoSlice';
-import EditTodoForm from './components/EditTodoForm';
-
+import React, { useEffect, useRef } from "react";
+import "./App.css";
+import AddTodo from "./components/AddTodo";
+import ListTodos from "./components/ListTodos";
+import { useAppSelector } from "./hook";
+import EditTodoForm from "./components/EditTodoForm";
 
 function App() {
-  const {loading, error, isEdit} = useAppSelector(state=> state.todos)
-  const dispatch = useAppDispatch();
+  const isEdit = useAppSelector(state => state.tasks.toggleEdit);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    dispatch(fetchTodos())
-  }, [dispatch])
- 
+    if(inputRef.current) inputRef.current.focus();
+  }, [])
+
   return (
-    <div className='App'>
+    <div className="App">
       <div className="App-header">
-        {isEdit
-          ? <EditTodoForm/>
-          : <>
-              <NewTodoForm/>
-              {loading && <h2>Loading...</h2>}
-              {error && <h2>An error occurred: {error}</h2>}
-              <TodoList/>
-            </>
-        }
+       {isEdit 
+        ? <EditTodoForm/>
+        : <>
+            <AddTodo inputRef={inputRef}/>
+            <ListTodos/>
+          </>
+       } 
+       
       </div>
     </div>
   );
